@@ -35,34 +35,13 @@ public class ArvBin {
         boolean hasntLeft = nodeLeft(index) >= tree.length || tree[nodeLeft(index)] == null;
         boolean hasntRight = nodeRight(index) >= tree.length || tree[nodeRight(index)] == null;
 
-        if (hasntLeft || hasntRight) {
-            if (hasntLeft) {
-                while (!(hasntLeft && hasntRight)) {
-                    tree[index] = nodeRight(index) < tree.length ? tree[nodeRight(index)] : null;
-                    tree[nodeLeft(index)] = nodeLeft(nodeRight(index)) < tree.length ? tree[nodeLeft(nodeRight(index))] : null;
-                    index = nodeRight(index);
-
-                    hasntLeft = nodeLeft(index) >= tree.length || tree[nodeLeft(index)] == null;
-                    hasntRight = nodeRight(index) >= tree.length || tree[nodeRight(index)] == null;
-                }
-
-                tree[index] = null;
-                return true;
-            }
-
-            if (hasntRight) {
-                while (!(hasntLeft && hasntRight)) {
-                    tree[index] = nodeLeft(index) < tree.length ? tree[nodeLeft(index)] : null;
-                    tree[nodeRight(index)] = nodeRight(nodeLeft(index)) < tree.length ? tree[nodeRight(nodeLeft(index))] : null;
-                    index = nodeLeft(index);
-
-                    hasntLeft = nodeLeft(index) >= tree.length || tree[nodeLeft(index)] == null;
-                    hasntRight = nodeRight(index) >= tree.length || tree[nodeRight(index)] == null;
-                }
-
-                tree[index] = null;
-                return true;
-            }
+        if (hasntLeft) {
+            adjust(nodeRight(index), nodeRight(index) - index);
+            return true;
+        }
+        if (hasntRight) {
+            adjust(nodeLeft(index), nodeLeft(index) - index);
+            return true;
         }
 
         int successor1 = nodeLeft(index);
@@ -83,33 +62,42 @@ public class ArvBin {
         hasntLeft = nodeLeft(successor) >= tree.length || tree[nodeLeft(successor)] == null;
         hasntRight = nodeRight(successor) >= tree.length || tree[nodeRight(successor)] == null;
 
-        if (hasntLeft || hasntRight) {
-            if (hasntLeft) {
-                while (!(hasntLeft && hasntRight)) {
-                    tree[successor] = nodeRight(successor) < tree.length ? tree[nodeRight(successor)] : null;
-                    tree[nodeLeft(successor)] = nodeLeft(nodeRight(successor)) < tree.length ? tree[nodeLeft(nodeRight(successor))] : null;
-                    successor = nodeRight(successor);
+        if (hasntLeft) {
+            while (!(hasntLeft && hasntRight)) {
+                tree[successor] = nodeRight(successor) < tree.length ? tree[nodeRight(successor)] : null;
+                tree[nodeLeft(successor)] = nodeLeft(nodeRight(successor)) < tree.length ? tree[nodeLeft(nodeRight(successor))] : null;
+                successor = nodeRight(successor);
 
-                    hasntLeft = nodeLeft(successor) >= tree.length || tree[nodeLeft(successor)] == null;
-                    hasntRight = nodeRight(successor) >= tree.length || tree[nodeRight(successor)] == null;
-                }
+                hasntLeft = nodeLeft(successor) >= tree.length || tree[nodeLeft(successor)] == null;
+                hasntRight = nodeRight(successor) >= tree.length || tree[nodeRight(successor)] == null;
             }
+        }
 
-            if (hasntRight) {
-                while (!(hasntLeft && hasntRight)) {
-                    tree[successor] = nodeLeft(successor) < tree.length ? tree[nodeLeft(successor)] : null;
-                    tree[nodeRight(successor)] = nodeRight(nodeLeft(successor)) < tree.length ? tree[nodeRight(nodeLeft(successor))] : null;
-                    successor = nodeLeft(successor);
+        if (hasntRight) {
+            while (!(hasntLeft && hasntRight)) {
+                tree[successor] = nodeLeft(successor) < tree.length ? tree[nodeLeft(successor)] : null;
+                tree[nodeRight(successor)] = nodeRight(nodeLeft(successor)) < tree.length ? tree[nodeRight(nodeLeft(successor))] : null;
+                successor = nodeLeft(successor);
 
-                    hasntLeft = nodeLeft(successor) >= tree.length || tree[nodeLeft(successor)] == null;
-                    hasntRight = nodeRight(successor) >= tree.length || tree[nodeRight(successor)] == null;
-                }
+                hasntLeft = nodeLeft(successor) >= tree.length || tree[nodeLeft(successor)] == null;
+                hasntRight = nodeRight(successor) >= tree.length || tree[nodeRight(successor)] == null;
             }
         }
         
         tree[successor] = null;
         tree[index] = successorValue;
         return true;
+    }
+
+    protected void adjust(int filho, int diff) {
+        if (filho >= tree.length || tree[filho] == null)
+            return;
+        
+        tree[filho - diff] = tree[filho];
+        tree[filho] = null;
+        
+        adjust(nodeLeft(filho), 2 * diff);
+        adjust(nodeRight(filho), 2 * diff);
     }
 
     protected int countNodes(int i) {
@@ -145,6 +133,10 @@ public class ArvBin {
 
     protected int nodeRight(int i) {
         return 2*i + 2;
+    }
+
+    protected int parent(int i) {
+        return (i - 1) / 2;
     }
 
     protected void setNode(int i, String v) {

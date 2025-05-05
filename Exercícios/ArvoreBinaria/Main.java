@@ -7,9 +7,9 @@ public class Main {
         String entradaCompleta = scanner.hasNext() ? scanner.next() : "";
         scanner.close();
         
-        ArvBin binTree = new ArvBin(1000);
-        ArvBal balTree = new ArvBal(1000);
-        ArvAVL avlTree = new ArvAVL(1000);
+        ArvBin binTree = new ArvBin(100);
+        ArvBal balTree = new ArvBal(100);
+        ArvAVL avlTree = new ArvAVL(100);
 
         String[] linhas = entradaCompleta.split("\n");
         int i = 1;
