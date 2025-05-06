@@ -7,10 +7,11 @@ public class Main {
         String entradaCompleta = scanner.hasNext() ? scanner.next() : "";
         scanner.close();
         
-        ArvBin binTree = new ArvBin(100);
-        ArvBal balTree = new ArvBal(100);
-        ArvAVL avlTree = new ArvAVL(100);
+        ArvBin binTree = new ArvBin(1000);
+        ArvBal balTree = new ArvBal(1000);
+        ArvAVL avlTree = new ArvAVL(1000);
 
+        // int i = 1; // debug
         String[] linhas = entradaCompleta.split("\n");
         for (String linha : linhas) {
             String[] partes = linha.split(" ", 2);
@@ -26,6 +27,10 @@ public class Main {
                 balTree.remove(nome);
                 avlTree.remove(nome);
             }
+            
+            // System.out.println(i++); // debug
+            // System.out.println(binTree); // debug
+            
         }
 
         System.out.println(binTree);

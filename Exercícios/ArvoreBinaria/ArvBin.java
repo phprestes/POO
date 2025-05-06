@@ -62,11 +62,13 @@ public class ArvBin {
             return true;
         }
         if (hasntLeft) {
-            adjust(nodeRight(index), nodeRight(index) - index); // Ajusta a subárvore da direita
+            String[] temp = Arrays.copyOf(tree, tree.length);
+            adjust(nodeRight(index), nodeRight(index) - index, temp); // Ajusta a subárvore da direita
             return true;
         }
         if (hasntRight) {
-            adjust(nodeLeft(index), nodeLeft(index) - index); // Ajusta a subárvore da esquerda
+            String[] temp = Arrays.copyOf(tree, tree.length);
+            adjust(nodeLeft(index), nodeLeft(index) - index, temp); // Ajusta a subárvore da esquerda
             return true;
         }
 
@@ -94,10 +96,12 @@ public class ArvBin {
             tree[successor] = null;
         }
         else if (hasntLeft) {
-            adjust(nodeRight(successor), nodeRight(successor) - successor);
+            String[] temp = Arrays.copyOf(tree, tree.length);
+            adjust(nodeRight(successor), nodeRight(successor) - successor, temp);
         }
         else if (hasntRight) {
-            adjust(nodeLeft(successor), nodeLeft(successor) - successor);
+            String[] temp = Arrays.copyOf(tree, tree.length);
+            adjust(nodeLeft(successor), nodeLeft(successor) - successor, temp);
         }
         
         // Sucessor original é removido e o índice do valor removido recebe o antigo sucessor
@@ -109,16 +113,21 @@ public class ArvBin {
      * Ajusta as subárvores após remoção
      * @param filho - Filho do nó que foi removido.
      * @param diff - Diferença entre o pai e o filho, duplica a cada iteração.
+     * @param temp - Param auxiliar da árvore
      */
-    protected void adjust(int filho, int diff) {
-        if (filho >= tree.length || tree[filho] == null)
+    protected void adjust(int filho, int diff, String[] temp) {
+        // System.out.println(Arrays.toString(tree)); // debug
+        // System.out.println("temp" + Arrays.toString(temp)); // debug
+        if (filho >= tree.length || temp[filho] == null)
             return;
+        // System.out.printf("Movendo %s de %d para %d%n", temp[filho], filho, filho - diff); // debug
         
-        tree[filho - diff] = tree[filho];
-        tree[filho] = null;
+        tree[filho - diff] = temp[filho];
+        if (tree[filho - diff].equals(tree[filho])) 
+            tree[filho] = null;
         
-        adjust(nodeLeft(filho), 2 * diff);
-        adjust(nodeRight(filho), 2 * diff);
+        adjust(nodeLeft(filho), 2 * diff, temp);
+        adjust(nodeRight(filho), 2 * diff, temp);
     }
 
     /**

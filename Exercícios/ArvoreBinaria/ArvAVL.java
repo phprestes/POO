@@ -208,11 +208,15 @@ public class ArvAVL extends ArvBin {
             return true;
         }
         if (hasntLeft) {
-            adjust(nodeRight(index), nodeRight(index) - index); // Ajusta a subárvore da direita
+            String[] temp = Arrays.copyOf(tree, tree.length);
+            adjust(nodeRight(index), nodeRight(index) - index, temp); // Ajusta a subárvore da direita
+            balanceTree(index);
             return true;
         }
         if (hasntRight) {
-            adjust(nodeLeft(index), nodeLeft(index) - index); // Ajusta a subárvore da esquerda
+            String[] temp = Arrays.copyOf(tree, tree.length);
+            adjust(nodeLeft(index), nodeLeft(index) - index, temp); // Ajusta a subárvore da esquerda
+            balanceTree(index);
             return true;
         }
 
@@ -231,14 +235,17 @@ public class ArvAVL extends ArvBin {
             tree[successor] = null;
         }
         else if (hasntLeft) {
-            adjust(nodeRight(successor), nodeRight(successor) - successor);
+            String[] temp = Arrays.copyOf(tree, tree.length);
+            adjust(nodeRight(successor), nodeRight(successor) - successor, temp);
         }
         else if (hasntRight) {
-            adjust(nodeLeft(successor), nodeLeft(successor) - successor);
+            String[] temp = Arrays.copyOf(tree, tree.length);
+            adjust(nodeLeft(successor), nodeLeft(successor) - successor, temp);
         }
         
         // Sucessor original é removido e o índice do valor removido recebe o antigo sucessor
         tree[index] = successorValue;
+        balanceTree(index);
         return true;
     }
 }
