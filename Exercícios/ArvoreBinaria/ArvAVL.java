@@ -196,11 +196,6 @@ public class ArvAVL extends ArvBin {
     
     // Remoção com a mesma lógica da superclasse, com a diferença de que não faz a verificação do sucessor.
     @Override
-    /**
-     * Remove um nó dado um valor da árvore
-     * @param v Valor do nó a ser removido
-     * @return booleano que indica se a remoção foi bem sucedida.
-     */
     public boolean remove(String v) {
         int index = Arrays.asList(tree).indexOf(v);
         if (index == -1) return false;
@@ -208,6 +203,10 @@ public class ArvAVL extends ArvBin {
         boolean hasntLeft = nodeLeft(index) >= tree.length || tree[nodeLeft(index)] == null; // Indica se não tem o filho da esquerdo
         boolean hasntRight = nodeRight(index) >= tree.length || tree[nodeRight(index)] == null; // Indica se não tem o filho da direita
 
+        if (hasntLeft && hasntRight) {
+            tree[index] = null;
+            return true;
+        }
         if (hasntLeft) {
             adjust(nodeRight(index), nodeRight(index) - index); // Ajusta a subárvore da direita
             return true;
@@ -221,20 +220,21 @@ public class ArvAVL extends ArvBin {
         int successor = nodeLeft(index);
         while (nodeRight(successor) < tree.length && tree[nodeRight(successor)] != null)
             successor = nodeRight(successor);
-
+        
         // Pega o valor do sucessor e remove ele da árvore
         String successorValue = tree[successor];
 
         hasntLeft = nodeLeft(successor) >= tree.length || tree[nodeLeft(successor)] == null;
         hasntRight = nodeRight(successor) >= tree.length || tree[nodeRight(successor)] == null;
 
-        if (hasntLeft) {
-            adjust(nodeRight(successor), nodeRight(successor) - successor);
-            return true;
+        if (hasntLeft && hasntRight) {
+            tree[successor] = null;
         }
-        if (hasntRight) {
+        else if (hasntLeft) {
+            adjust(nodeRight(successor), nodeRight(successor) - successor);
+        }
+        else if (hasntRight) {
             adjust(nodeLeft(successor), nodeLeft(successor) - successor);
-            return true;
         }
         
         // Sucessor original é removido e o índice do valor removido recebe o antigo sucessor

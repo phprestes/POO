@@ -57,6 +57,10 @@ public class ArvBin {
         boolean hasntLeft = nodeLeft(index) >= tree.length || tree[nodeLeft(index)] == null; // Indica se não tem o filho da esquerdo
         boolean hasntRight = nodeRight(index) >= tree.length || tree[nodeRight(index)] == null; // Indica se não tem o filho da direita
 
+        if (hasntLeft && hasntRight) {
+            tree[index] = null;
+            return true;
+        }
         if (hasntLeft) {
             adjust(nodeRight(index), nodeRight(index) - index); // Ajusta a subárvore da direita
             return true;
@@ -86,13 +90,14 @@ public class ArvBin {
         hasntLeft = nodeLeft(successor) >= tree.length || tree[nodeLeft(successor)] == null;
         hasntRight = nodeRight(successor) >= tree.length || tree[nodeRight(successor)] == null;
 
-        if (hasntLeft) {
-            adjust(nodeRight(successor), nodeRight(successor) - successor);
-            return true;
+        if (hasntLeft && hasntRight) {
+            tree[successor] = null;
         }
-        if (hasntRight) {
+        else if (hasntLeft) {
+            adjust(nodeRight(successor), nodeRight(successor) - successor);
+        }
+        else if (hasntRight) {
             adjust(nodeLeft(successor), nodeLeft(successor) - successor);
-            return true;
         }
         
         // Sucessor original é removido e o índice do valor removido recebe o antigo sucessor
