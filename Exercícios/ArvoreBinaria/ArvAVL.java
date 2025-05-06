@@ -1,10 +1,16 @@
 import java.util.Arrays;
 
 public class ArvAVL extends ArvBin {
+
+    // Construtor
     public ArvAVL(int len) {
         super(len);
     }
 
+    /**
+     * Faz o balanceamento da sub-árvore de raiz de índice i
+     * @param i - Índice da raiz da sub-árvore
+     */
     private void balanceTree(int i) {
         if (i >= tree.length || tree[i] == null)
             return;
@@ -32,9 +38,13 @@ public class ArvAVL extends ArvBin {
 
         // Balanceia recursivamente até a raiz
         if (i != 0)
-            balanceTree((i - 1)/2);
+            balanceTree(parent(i));
     }
 
+    /**
+     * Faz a rotação para a direita da sub-árvore de raiz de índice i
+     * @param i - Índice da raiz da sub-árvore
+     */
     private void rotateRight(int i) {
         int l = nodeLeft(i);
         if (l >= tree.length || tree[l] == null) return;
@@ -72,7 +82,10 @@ public class ArvAVL extends ArvBin {
             copySubtreeFrom(temp, ll, nodeLeft(i));
     }
 
-
+    /**
+     * Faz a rotação para a esquerda da sub-árvore de raiz de índice i
+     * @param i - Índice da raiz da sub-árvore
+     */
     private void rotateLeft(int i) {
         int r = nodeRight(i);
         if (r >= tree.length || tree[r] == null) return;
@@ -82,9 +95,9 @@ public class ArvAVL extends ArvBin {
         String oldRoot = tree[i];
         String newRoot = tree[r];
 
-        int rl = nodeLeft(r);
-        int rr = nodeRight(r);
-        int l = nodeLeft(i);
+        int rl = nodeLeft(r);   // filho esquerdo do filho direito
+        int rr = nodeRight(r);  // filho direito do filho direito
+        int l = nodeLeft(i);    // filho esquerdo da raiz original
 
         // Limpa o espaço atual
         clearSubtree(i);
@@ -110,6 +123,12 @@ public class ArvAVL extends ArvBin {
             copySubtreeFrom(temp, rr, nodeRight(i));
     }
 
+    /**
+     * Copia a sub-árvore de um índice para outro
+     * @param source - Cópia da árvore
+     * @param from - Índice de origem
+     * @param to - Índice de destino
+     */
     private void copySubtreeFrom(String[] source, int from, int to) {
         if (from >= source.length || source[from] == null || to >= tree.length)
             return;
@@ -119,6 +138,10 @@ public class ArvAVL extends ArvBin {
         copySubtreeFrom(source, nodeRight(from), nodeRight(to));
     }
 
+    /**
+     * Limpa a sub-árvore de índice i
+     * @param i - Índice da raiz da sub-árvore
+     */
     private void clearSubtree(int i) {
         if (i >= tree.length || tree[i] == null)
             return;
@@ -128,10 +151,20 @@ public class ArvAVL extends ArvBin {
         tree[i] = null;
     }
 
+    /**
+     * Calcula o fator de balanceamento de um nó
+     * @param i - Índice do nó.
+     * @return - Inteiro do fator de balanceamento.
+     */
     protected int calculateBalance(int i) {
         return calculateHeight(nodeLeft(i)) - calculateHeight(nodeRight(i));
     }
 
+    /**
+     * Calcula a altura do nó.
+     * @param i - Índice do nó.
+     * @return - Inteiro da altura do nó.
+     */
     protected int calculateHeight(int i) {
         if (i < tree.length && tree[i] != null)
             return Math.max(calculateHeight(nodeLeft(i)), calculateHeight(nodeRight(i))) + 1;
@@ -139,6 +172,11 @@ public class ArvAVL extends ArvBin {
             return -1;
     }
 
+    /**
+     * Checa se uma sub-árvore é balanceada
+     * @param i - Índice do nó raiz.
+     * @return - Booleano se a árvore está balanceada ou não.
+     */
     @Override
     protected boolean isBalance(int i) {
         if (i < tree.length && tree[i] != null) {
@@ -149,76 +187,62 @@ public class ArvAVL extends ArvBin {
             return true;
     }
 
+    // Insere e balanceia.
     @Override
     public void insert(String value) {
         super.insert(value);
         balanceTree(Arrays.asList(tree).indexOf(value));
     }
-
+    
+    // Remoção com a mesma lógica da superclasse, com a diferença de que não faz a verificação do sucessor.
     @Override
+    /**
+     * Remove um nó dado um valor da árvore
+     * @param v Valor do nó a ser removido
+     * @return booleano que indica se a remoção foi bem sucedida.
+     */
     public boolean remove(String v) {
         int index = Arrays.asList(tree).indexOf(v);
         if (index == -1) return false;
 
-        boolean hasntLeft = nodeLeft(index) >= tree.length || tree[nodeLeft(index)] == null;
-        boolean hasntRight = nodeRight(index) >= tree.length || tree[nodeRight(index)] == null;
+        boolean hasntLeft = nodeLeft(index) >= tree.length || tree[nodeLeft(index)] == null; // Indica se não tem o filho da esquerdo
+        boolean hasntRight = nodeRight(index) >= tree.length || tree[nodeRight(index)] == null; // Indica se não tem o filho da direita
 
-        if (hasntLeft || hasntRight) {
-            if (hasntLeft) {
-                while (!(hasntLeft && hasntRight)) {
-                    tree[index] = nodeRight(index) < tree.length ? tree[nodeRight(index)] : null;
-                    tree[nodeLeft(index)] = nodeLeft(nodeRight(index)) < tree.length ? tree[nodeLeft(nodeRight(index))] : null;
-                    index = nodeRight(index);
-
-                    hasntLeft = nodeLeft(index) >= tree.length || tree[nodeLeft(index)] == null;
-                    hasntRight = nodeRight(index) >= tree.length || tree[nodeRight(index)] == null;
-                }
-
-                tree[index] = null;
-                balanceTree(index);
-                return true;
-            }
-
-            if (hasntRight) {
-                while (!(hasntLeft && hasntRight)) {
-                    tree[index] = nodeLeft(index) < tree.length ? tree[nodeLeft(index)] : null;
-                    tree[nodeRight(index)] = nodeRight(nodeLeft(index)) < tree.length ? tree[nodeRight(nodeLeft(index))] : null;
-                    index = nodeLeft(index);
-
-                    hasntLeft = nodeLeft(index) >= tree.length || tree[nodeLeft(index)] == null;
-                    hasntRight = nodeRight(index) >= tree.length || tree[nodeRight(index)] == null;
-                }
-
-                tree[index] = null;
-                balanceTree(index);
-                return true;
-            }
+        if (hasntLeft) {
+            adjust(nodeRight(index), nodeRight(index) - index); // Ajusta a subárvore da direita
+            return true;
+        }
+        if (hasntRight) {
+            adjust(nodeLeft(index), nodeLeft(index) - index); // Ajusta a subárvore da esquerda
+            return true;
         }
 
+        // Encontra o maior da sub-árvore esquerda
         int successor = nodeLeft(index);
-        while (nodeRight(successor) < tree.length && tree[nodeRight(successor)] != null) {
-            successor = nodeRight(successor);
-        }
+        while (nodeRight(successor_esq) < tree.length && tree[nodeRight(successor_esq)] != null)
+            successor = nodeRight(successor_esq);
 
+        // Usa o sucessor mais perto
+        if (Math.abs(index - successor_esq) < Math.abs(index - successor)) 
+            successor = successor_esq;
+        
+        // Pega o valor do sucessor e remove ele da árvore
         String successorValue = tree[successor];
 
         hasntLeft = nodeLeft(successor) >= tree.length || tree[nodeLeft(successor)] == null;
         hasntRight = nodeRight(successor) >= tree.length || tree[nodeRight(successor)] == null;
 
+        if (hasntLeft) {
+            adjust(nodeRight(successor), nodeRight(successor) - sucessor);
+            return true;
+        }
         if (hasntRight) {
-            while (!(hasntLeft && hasntRight)) {
-                tree[successor] = nodeLeft(successor) < tree.length ? tree[nodeLeft(successor)] : null;
-                tree[nodeRight(successor)] = nodeRight(nodeLeft(successor)) < tree.length ? tree[nodeRight(nodeLeft(successor))] : null;
-                successor = nodeLeft(successor);
-
-                hasntLeft = nodeLeft(successor) >= tree.length || tree[nodeLeft(successor)] == null;
-                hasntRight = nodeRight(successor) >= tree.length || tree[nodeRight(successor)] == null;
-            }
+            adjust(nodeLeft(successor), nodeLeft(successor) - successor);
+            return true;
         }
         
-        tree[successor] = null;
+        // Sucessor original é removido e o índice do valor removido recebe o antigo sucessor
         tree[index] = successorValue;
-        balanceTree(index);
         return true;
     }
 }
