@@ -18,7 +18,7 @@ public class ArvBal extends ArvBin {
                                         .toArray(String[]::new);
             
             Arrays.fill(tree, null);
-            rebuildTree(nonNullArray, 0, nonNullArray.length - 1, 0);
+            rebuildTree(nonNullArray, 0, nonNullArray.length - 1);
         }
     }
 
@@ -29,7 +29,7 @@ public class ArvBal extends ArvBin {
      * @param end - Fim da partição do array para recursão.
      */
     private void rebuildTree(String[] array, int start, int end) {
-        if (start > end || treeIndex >= tree.length)
+        if (start > end)
             return;
         
         int mid = start + (end - start) / 2;

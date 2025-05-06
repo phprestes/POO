@@ -219,13 +219,9 @@ public class ArvAVL extends ArvBin {
 
         // Encontra o maior da sub-árvore esquerda
         int successor = nodeLeft(index);
-        while (nodeRight(successor_esq) < tree.length && tree[nodeRight(successor_esq)] != null)
-            successor = nodeRight(successor_esq);
+        while (nodeRight(successor) < tree.length && tree[nodeRight(successor)] != null)
+            successor = nodeRight(successor);
 
-        // Usa o sucessor mais perto
-        if (Math.abs(index - successor_esq) < Math.abs(index - successor)) 
-            successor = successor_esq;
-        
         // Pega o valor do sucessor e remove ele da árvore
         String successorValue = tree[successor];
 
@@ -233,7 +229,7 @@ public class ArvAVL extends ArvBin {
         hasntRight = nodeRight(successor) >= tree.length || tree[nodeRight(successor)] == null;
 
         if (hasntLeft) {
-            adjust(nodeRight(successor), nodeRight(successor) - sucessor);
+            adjust(nodeRight(successor), nodeRight(successor) - successor);
             return true;
         }
         if (hasntRight) {

@@ -87,7 +87,7 @@ public class ArvBin {
         hasntRight = nodeRight(successor) >= tree.length || tree[nodeRight(successor)] == null;
 
         if (hasntLeft) {
-            adjust(nodeRight(successor), nodeRight(successor) - sucessor);
+            adjust(nodeRight(successor), nodeRight(successor) - successor);
             return true;
         }
         if (hasntRight) {
