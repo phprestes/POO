@@ -12,7 +12,6 @@ public class Main {
         ArvAVL avlTree = new ArvAVL(100);
 
         String[] linhas = entradaCompleta.split("\n");
-        int i = 1;
         for (String linha : linhas) {
             String[] partes = linha.split(" ", 2);
             char comando = partes[0].charAt(0);
@@ -27,8 +26,6 @@ public class Main {
                 balTree.remove(nome);
                 avlTree.remove(nome);
             }
-            System.out.println(i++);
-            System.out.println(binTree);
         }
 
         System.out.println(binTree);
