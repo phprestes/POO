@@ -1,4 +1,6 @@
 import java.util.Arrays;
+import java.util.Queue;
+import java.util.LinkedList;
 
 public class ArvBin {
     protected String[] tree;
@@ -61,17 +63,56 @@ public class ArvBin {
             tree[index] = null;
             return true;
         }
-        if (hasntLeft) {
-            String[] temp = Arrays.copyOf(tree, tree.length);
-            adjust(nodeRight(index), nodeRight(index) - index, temp); // Ajusta a subárvore da direita
-            return true;
-        }
-        if (hasntRight) {
-            String[] temp = Arrays.copyOf(tree, tree.length);
-            adjust(nodeLeft(index), nodeLeft(index) - index, temp); // Ajusta a subárvore da esquerda
-            return true;
-        }
+        else if (hasntLeft || hasntRight) {
+            int subTreeRootOld = hasntLeft ? nodeRight(index) : nodeLeft(index); // Posição original do filho
+            int subTreeRootNew = index; // Nova posição (substitui o nó removido)
 
+            // Promove o filho para a posição do pai
+            tree[subTreeRootNew] = tree[subTreeRootOld];
+            tree[subTreeRootOld] = null;
+
+            // Fila armazena pares [posição antiga, nova posição]
+            Queue<int[]> queue = new LinkedList<>();
+
+            // Adiciona os filhos do subTreeRootOld à fila, com suas novas posições esperadas
+            int oldLeft = nodeLeft(subTreeRootOld);
+            int newLeft = nodeLeft(subTreeRootNew);
+            if (oldLeft < tree.length && tree[oldLeft] != null) {
+                queue.add(new int[]{oldLeft, newLeft});
+            }
+
+            int oldRight = nodeRight(subTreeRootOld);
+            int newRight = nodeRight(subTreeRootNew);
+            if (oldRight < tree.length && tree[oldRight] != null) {
+                queue.add(new int[]{oldRight, newRight});
+            }
+
+            // Processa cada nó da subárvore
+            while (!queue.isEmpty()) {
+                int[] positions = queue.poll();
+                int currentOld = positions[0];
+                int currentNew = positions[1];
+
+                // Move o nó para a nova posição
+                tree[currentNew] = tree[currentOld];
+                tree[currentOld] = null;
+
+                // Calcula as novas posições dos filhos baseado na currentNew
+                int nextOldLeft = nodeLeft(currentOld);
+                int nextNewLeft = nodeLeft(currentNew);
+                if (nextOldLeft < tree.length && tree[nextOldLeft] != null) {
+                    queue.add(new int[]{nextOldLeft, nextNewLeft});
+                }
+
+                int nextOldRight = nodeRight(currentOld);
+                int nextNewRight = nodeRight(currentNew);
+                if (nextOldRight < tree.length && tree[nextOldRight] != null) {
+                    queue.add(new int[]{nextOldRight, nextNewRight});
+                }
+            }
+            
+            return true;
+        }
         // Encontra o maior da sub-árvore esquerda
         int successor_esq = nodeLeft(index);
         while (nodeRight(successor_esq) < tree.length && tree[nodeRight(successor_esq)] != null)
